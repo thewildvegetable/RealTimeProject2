@@ -62,11 +62,11 @@ const setupSockets = (ioServer) => {
 };
 
 // function for returning gravity
-const sendGravity = (data) => {
+const sendMovement = (data) => {
   users[data.hash] = data;
 
   io.sockets.in('room1').emit('updatedMovement', users[data.hash]);
 };
 
 module.exports.setupSockets = setupSockets;
-module.exports.sendGravity = sendGravity;
+module.exports.sendMovement = sendMovement;

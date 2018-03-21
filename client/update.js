@@ -17,7 +17,8 @@ const update = (data) => {
       //update y info
       square.prevY = data.prevY;
       square.destY = data.destY;
-      square.upVelocity = data.upVelocity;
+      square.vertVelocity = data.vertVelocity;
+      square.horizVelocity = data.horizVelocity;
       square.alpha = 0.05;
     return;
   }
@@ -35,9 +36,8 @@ const update = (data) => {
   square.prevY = data.prevY;
   square.destX = data.destX;
   square.destY = data.destY;
-  square.moveLeft = data.moveLeft;
-  square.moveRight = data.moveRight;
-  square.upVelocity = data.upVelocity;
+  square.vertVelocity = data.vertVelocity;
+  square.horizVelocity = data.horizVelocity;
   square.alpha = 0.05;
 };
 
@@ -67,11 +67,17 @@ const updatePosition = () => {
   square.prevY = square.y;
 
     //move
-  if(square.moveLeft && square.destX > 0) {
-    square.destX -= 2;
+  if(square.moveLeft) {
+    square.horizVelocity -= 2;
   }
-  if(square.moveRight && square.destX < 600) {
-    square.destX += 2;
+  if(square.moveRight) {
+    square.horizVelocity += 2;
+  }
+  if(square.moveUp) {
+    square.vertVelocity += 2;
+  }
+  if(square.moveRight) {
+    square.vertVelocity -= 2;
   }
 
   //reset alpha

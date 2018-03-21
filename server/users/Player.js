@@ -9,7 +9,8 @@ class Player {
     this.prevY = this.y; // last known y location
     this.destX = this.x; // destination x location
     this.destY = this.y; // destination y location
-    this.upVelocity = 0;
+    this.vertVelocity = 0;  //velocity o nthe y axis
+      this.horizVelocity = 0;  //velocity on the x axis
     this.speed = 3; // max speed
     this.height = 100;
     this.width = 100;
@@ -18,6 +19,8 @@ class Player {
     // kept left and right for movement code to avoid setting local variables
     this.moveLeft = false;
     this.moveRight = false;
+      this.moveUp = false;
+      this.moveDown = false;
   }
 }
 
