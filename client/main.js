@@ -4,29 +4,29 @@ let socket;
 let hash;
 let animationFrame;
 
-let squares = {}; //list of users
+let circles = {}; //list of users
 
 //handle for key down events
 //code taken from the inclass physics example
 const keyDownHandler = (e) => {
   var keyPressed = e.which;
-  const square = squares[hash];
+  const circle = circles[hash];
 
   // W OR UP
   if(keyPressed === 87 || keyPressed === 38) {
-    square.moveUp = true;
+    circle.moveUp = true;
   }
   // A OR LEFT
   else if(keyPressed === 65 || keyPressed === 37) {
-    square.moveLeft = true;
+    circle.moveLeft = true;
   }
   // S OR DOWN
   else if(keyPressed === 83 || keyPressed === 40) {
-    square.moveDown = true;
+    circle.moveDown = true;
   }
   // D OR RIGHT
   else if(keyPressed === 68 || keyPressed === 39) {
-    square.moveRight = true;
+    circle.moveRight = true;
   }
 };
 
@@ -34,23 +34,23 @@ const keyDownHandler = (e) => {
 //code taken from the inclass physics example
 const keyUpHandler = (e) => {
   var keyPressed = e.which;
-  const square = squares[hash];
+  const circle = circles[hash];
 
   // W OR UP
   if(keyPressed === 87 || keyPressed === 38) {
-    square.moveUp = true;
+    circle.moveUp = false;
   }
   // A OR LEFT
   else if(keyPressed === 65 || keyPressed === 37) {
-    square.moveLeft = true;
+    circle.moveLeft = false;
   }
   // S OR DOWN
   else if(keyPressed === 83 || keyPressed === 40) {
-    square.moveDown = true;
+    circle.moveDown = false;
   }
   // D OR RIGHT
   else if(keyPressed === 68 || keyPressed === 39) {
-    square.moveRight = true;
+    circle.moveRight = false;
   }
 };
 

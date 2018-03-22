@@ -6,37 +6,33 @@ const lerp = (v0, v1, alpha) => {
 const redraw = (time) => {
   //update positions
   updatePosition();
-
+    
+    //clear screen
   ctx.clearRect(0, 0, 700, 500);
 
-  const keys = Object.keys(squares);
+  const keys = Object.keys(circles);
 
   for(let i = 0; i < keys.length; i++) {
-    const square = squares[keys[i]];
+    const circle = circles[keys[i]];
 
-    if(square.alpha < 1) square.alpha += 0.05;
-
-    //filter other characters so we can tell which multicolored square is ours
-    if(square.hash === hash) {
-      ctx.filter = "none"
-    }
-    else {
-      ctx.filter = "hue-rotate(40deg)";
-    }
+    if(circle.alpha < 1) circle.alpha += 0.05;
 
     //lerp
-    square.x = lerp(square.prevX, square.destX, square.alpha);
-    square.y = lerp(square.prevY, square.destY, square.alpha);
+    circle.x = lerp(circle.prevX, circle.destX, circle.alpha);
+    circle.y = lerp(circle.prevY, circle.destY, circle.alpha);
 
     //draw
-    //make our square draw black to be distinguished
-    if(square.hash === hash) {
+    //make our circle draw black to be distinguished
+    if(circle.hash === hash) {
       ctx.fillStyle = "black";
     }
     else {
-      ctx.fillStyle = square.color;
+      ctx.fillStyle = circle.color;
     }
-    ctx.fillRect(square.x, square.y, square.width, square.height);
+    ctx.beginPath();
+    ctx.arc(circle.x, circle.y, circle.radius,0,2*Math.PI);
+    ctx.fill();
+    ctx.closePath();
   }
   
   animationFrame = requestAnimationFrame(redraw);

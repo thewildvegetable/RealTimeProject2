@@ -7,34 +7,31 @@ const redraw = time => {
   //update positions
   updatePosition();
 
+  //clear screen
   ctx.clearRect(0, 0, 700, 500);
 
-  const keys = Object.keys(squares);
+  const keys = Object.keys(circles);
 
   for (let i = 0; i < keys.length; i++) {
-    const square = squares[keys[i]];
+    const circle = circles[keys[i]];
 
-    if (square.alpha < 1) square.alpha += 0.05;
-
-    //filter other characters so we can tell which multicolored square is ours
-    if (square.hash === hash) {
-      ctx.filter = "none";
-    } else {
-      ctx.filter = "hue-rotate(40deg)";
-    }
+    if (circle.alpha < 1) circle.alpha += 0.05;
 
     //lerp
-    square.x = lerp(square.prevX, square.destX, square.alpha);
-    square.y = lerp(square.prevY, square.destY, square.alpha);
+    circle.x = lerp(circle.prevX, circle.destX, circle.alpha);
+    circle.y = lerp(circle.prevY, circle.destY, circle.alpha);
 
     //draw
-    //make our square draw black to be distinguished
-    if (square.hash === hash) {
+    //make our circle draw black to be distinguished
+    if (circle.hash === hash) {
       ctx.fillStyle = "black";
     } else {
-      ctx.fillStyle = square.color;
+      ctx.fillStyle = circle.color;
     }
-    ctx.fillRect(square.x, square.y, square.width, square.height);
+    ctx.beginPath();
+    ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.closePath();
   }
 
   animationFrame = requestAnimationFrame(redraw);
@@ -45,43 +42,54 @@ let socket;
 let hash;
 let animationFrame;
 
-let squares = {}; //list of users
+let circles = {}; //list of users
 
 //handle for key down events
-//code taken from the inclass physics example and edited to remove updown movement
+//code taken from the inclass physics example
 const keyDownHandler = e => {
   var keyPressed = e.which;
-  const square = squares[hash];
+  const circle = circles[hash];
 
-  // A OR LEFT
-  if (keyPressed === 65 || keyPressed === 37) {
-    square.moveLeft = true;
+  // W OR UP
+  if (keyPressed === 87 || keyPressed === 38) {
+    circle.moveUp = true;
   }
-  // D OR RIGHT
-  else if (keyPressed === 68 || keyPressed === 39) {
-      square.moveRight = true;
+  // A OR LEFT
+  else if (keyPressed === 65 || keyPressed === 37) {
+      circle.moveLeft = true;
     }
+    // S OR DOWN
+    else if (keyPressed === 83 || keyPressed === 40) {
+        circle.moveDown = true;
+      }
+      // D OR RIGHT
+      else if (keyPressed === 68 || keyPressed === 39) {
+          circle.moveRight = true;
+        }
 };
 
 //handler for key up events
-//code taken from the inclass physics example and edited to remove updown movement
+//code taken from the inclass physics example
 const keyUpHandler = e => {
   var keyPressed = e.which;
-  const square = squares[hash];
+  const circle = circles[hash];
 
-  // A OR LEFT
-  if (keyPressed === 65 || keyPressed === 37) {
-    square.moveLeft = false;
+  // W OR UP
+  if (keyPressed === 87 || keyPressed === 38) {
+    circle.moveUp = false;
   }
-  // D OR RIGHT
-  else if (keyPressed === 68 || keyPressed === 39) {
-      square.moveRight = false;
+  // A OR LEFT
+  else if (keyPressed === 65 || keyPressed === 37) {
+      circle.moveLeft = false;
     }
-    //Space key was lifted
-    //only jump if upVelocity is 0
-    else if (keyPressed === 32 && square.upVelocity === 0) {
-        square.upVelocity = 10;
+    // S OR DOWN
+    else if (keyPressed === 83 || keyPressed === 40) {
+        circle.moveDown = false;
       }
+      // D OR RIGHT
+      else if (keyPressed === 68 || keyPressed === 39) {
+          circle.moveRight = false;
+        }
 };
 
 const init = () => {
@@ -102,58 +110,58 @@ window.onload = init;
 //update a player
 const update = data => {
   //if we dont have this player, add them
-  if (!squares[data.hash]) {
-    squares[data.hash] = data;
+  if (!circles[data.hash]) {
+    circles[data.hash] = data;
     return;
   }
 
   //dont update ourself on the x axis
   if (data.hash === hash) {
     //ignore old messages
-    if (squares[data.hash].lastUpdate >= data.lastUpdate) {
+    if (circles[data.hash].lastUpdate >= data.lastUpdate) {
       return;
     }
-    const square = squares[data.hash];
+    const circle = circles[data.hash];
 
     //update y info
-    square.prevY = data.prevY;
-    square.destY = data.destY;
-    square.upVelocity = data.upVelocity;
-    square.alpha = 0.05;
+    circle.prevY = data.prevY;
+    circle.destY = data.destY;
+    circle.vertVelocity = data.vertVelocity;
+    circle.horizVelocity = data.horizVelocity;
+    circle.alpha = 0.05;
     return;
   }
 
   //ignore old messages
-  if (squares[data.hash].lastUpdate >= data.lastUpdate) {
+  if (circles[data.hash].lastUpdate >= data.lastUpdate) {
     return;
   }
 
   //take the player
-  const square = squares[data.hash];
+  const circle = circles[data.hash];
 
   //update x y info
-  square.prevX = data.prevX;
-  square.prevY = data.prevY;
-  square.destX = data.destX;
-  square.destY = data.destY;
-  square.moveLeft = data.moveLeft;
-  square.moveRight = data.moveRight;
-  square.upVelocity = data.upVelocity;
-  square.alpha = 0.05;
+  circle.prevX = data.prevX;
+  circle.prevY = data.prevY;
+  circle.destX = data.destX;
+  circle.destY = data.destY;
+  circle.vertVelocity = data.vertVelocity;
+  circle.horizVelocity = data.horizVelocity;
+  circle.alpha = 0.05;
 };
 
 //remove disconnected users
 const removeUser = data => {
-  if (squares[data.hash]) {
-    delete squares[data.hash];
+  if (circles[data.hash]) {
+    delete circles[data.hash];
   }
 };
 
 //update our data
 const setUser = data => {
-  //store our hash data and square
+  //store our hash data and circle
   hash = data.hash;
-  squares[hash] = data;
+  circles[hash] = data;
 
   //start to draw
   requestAnimationFrame(redraw);
@@ -161,23 +169,79 @@ const setUser = data => {
 
 //update our position
 const updatePosition = () => {
-  const square = squares[hash];
+  const circle = circles[hash];
 
   //store new previous position
-  square.prevX = square.x;
-  square.prevY = square.y;
+  circle.prevX = circle.x;
+  circle.prevY = circle.y;
+
+  //shrink velocities
+  circle.vertVelocity *= .8;
+  circle.horizVelocity *= .8;
+
+  //set velocity to 0 if small enough
+  if (Math.abs(circle.vertVelocity) <= .01) {
+    circle.vertVelocity = 0;
+  }
+  if (Math.abs(circle.horizVelocity) <= .01) {
+    circle.horizVelocity = 0;
+  }
+
+  //increment velocity
+  if (circle.moveLeft) {
+    circle.horizVelocity -= 2;
+  }
+  if (circle.moveRight) {
+    circle.horizVelocity += 2;
+  }
+  if (circle.moveUp) {
+    circle.vertVelocity -= 2;
+  }
+  if (circle.moveDown) {
+    circle.vertVelocity += 2;
+  }
+
+  //cap velocity
+  if (circle.vertVelocity >= 6) {
+    circle.vertVelocity = 6;
+  } else if (circle.vertVelocity <= -6) {
+    circle.vertVelocity = -6;
+  }
+  if (circle.horizVelocity >= 6) {
+    circle.horizVelocity = 6;
+  } else if (circle.horizVelocity <= -6) {
+    circle.horizVelocity = -6;
+  }
 
   //move
-  if (square.moveLeft && square.destX > 0) {
-    square.destX -= 2;
+  circle.destX += circle.horizVelocity * circle.speed;
+  circle.destY += circle.vertVelocity * circle.speed;
+
+  //if against the walls, bounce
+  if (circle.destY < 0) {
+    circle.destY = 0;
+    circle.vertVelocity *= -1;
+    circle.moveUp = false;
   }
-  if (square.moveRight && square.destX < 600) {
-    square.destX += 2;
+  if (circle.destY > 500) {
+    circle.destY = 500;
+    circle.vertVelocity *= -1;
+    circle.moveDown = false;
+  }
+  if (circle.destX < 0) {
+    circle.destX = 0;
+    circle.horizVelocity *= -1;
+    circle.moveLeft = false;
+  }
+  if (circle.destX > 700) {
+    circle.destX = 700;
+    circle.horizVelocity *= -1;
+    circle.moveRight = false;
   }
 
   //reset alpha
-  square.alpha = 0.05;
+  circle.alpha = 0.05;
 
   //send updated movement to server
-  socket.emit('movementUpdate', square);
+  socket.emit('movementUpdate', circle);
 };

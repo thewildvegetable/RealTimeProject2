@@ -1,14 +1,59 @@
 const xxh = require('xxhashjs');
 // custom class for the player
-const Player = require('./users/Player.js');
-// gravity stuff
-const physics = require('./physics.js');
+const Player = require('./Messages/Player.js');
+// custom class for messages
+const Message = require('./Messages/Message.js');
+// child process to hold physics
+const child = require('child_process');
 
 // object of user users
 const users = {};
 
 // our socketio instance
 let io;
+
+// start child process
+const physics = child.fork('./server/physics.js');
+
+// when we get a message from physics, process it
+physics.on('message', (m) => {
+  // since we are using a custom message object with a type
+  // we know we can check the type field to see what type of
+  // message we are receiving
+  switch (m.type) {
+    // if the message type is 'collisionUpdate'
+    case 'collisionUpdate': {
+      // update our users object
+      users[m.data.hash] = m.data;
+
+      // send the new data
+      io.sockets.in('room1').emit('updatedMovement', users[m.data.hash]);
+      break;
+    }
+    // assume we do not recongize the message type
+    default: {
+      console.log('Received unclear type from physics');
+    }
+  }
+});
+
+// when we receive an error from our physics process
+physics.on('error', (error) => {
+  console.dir(error);
+});
+
+// when our physics process closes
+physics.on('close', (code, signal) => {
+  console.log(`Child closed with ${code} ${signal}`);
+});
+
+// when our physics process exits
+physics.on('exit', (code, signal) => {
+  console.log(`Child exited with ${code} ${signal}`);
+});
+
+// send the character list to physics
+physics.send(new Message('userList', users));
 
 // function to setup our socket server
 const setupSockets = (ioServer) => {
@@ -21,7 +66,7 @@ const setupSockets = (ioServer) => {
 
     socket.join('room1'); // join user to our socket room
 
-    const hash = xxh.h32(`${socket.id}${new Date().getTime()}`, 0xDEADBEEF).toString(16);
+    const hash = xxh.h32(`${socket.id}${new Date().getTime()}`, 0xDadBadAF).toString(16);
 
     // create a new user and store it by its unique id
     users[hash] = new Player(hash);
@@ -39,7 +84,7 @@ const setupSockets = (ioServer) => {
       users[socket.hash].lastUpdate = new Date().getTime();
 
       // update physics simulation
-      physics.setUser(users[socket.hash]);
+      physics.send(new Message('userList', users));
 
       // tell everyone someone has moved
       io.sockets.in('room1').emit('updatedMovement', users[socket.hash]);
@@ -53,7 +98,7 @@ const setupSockets = (ioServer) => {
       // remove this user from our object
       delete users[socket.hash];
       // update the user list in our physics calculations
-      physics.setUserList(users);
+      physics.send(new Message('userList', users));
 
       // remove this user from the socket room
       socket.leave('room1');
@@ -61,12 +106,4 @@ const setupSockets = (ioServer) => {
   });
 };
 
-// function for returning gravity
-const sendMovement = (data) => {
-  users[data.hash] = data;
-
-  io.sockets.in('room1').emit('updatedMovement', users[data.hash]);
-};
-
 module.exports.setupSockets = setupSockets;
-module.exports.sendMovement = sendMovement;
