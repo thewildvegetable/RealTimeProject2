@@ -1,6 +1,9 @@
 // custom class for messages
 const Message = require('./Messages/Message.js');
 
+//vector class
+const victor = require('victor');
+
 let userList = {}; // list of users
 
 // circle to circle collision
