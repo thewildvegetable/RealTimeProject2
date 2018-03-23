@@ -217,26 +217,65 @@ const updatePosition = () => {
   circle.destX += circle.horizVelocity * circle.speed;
   circle.destY += circle.vertVelocity * circle.speed;
 
-  //if against the walls, bounce
+  //if destination is against the walls, stop additional movement in that direction
   if (circle.destY < 0) {
-    circle.destY = 0;
-    circle.vertVelocity *= -1;
     circle.moveUp = false;
   }
   if (circle.destY > 500) {
-    circle.destY = 500;
-    circle.vertVelocity *= -1;
     circle.moveDown = false;
   }
   if (circle.destX < 0) {
-    circle.destX = 0;
-    circle.horizVelocity *= -1;
     circle.moveLeft = false;
   }
   if (circle.destX > 700) {
-    circle.destX = 700;
-    circle.horizVelocity *= -1;
     circle.moveRight = false;
+  }
+  //if against the walls, bounce
+  if (circle.y <= 0) {
+    console.dir(circle);
+    //reset destination and previous
+    circle.destY = 0;
+    circle.prevY = 0;
+    //inverse velocity
+    circle.vertVelocity *= -1;
+    //move again
+    circle.alpha = .5;
+    circle.destY += 30 * circle.speed;
+    circle.y = lerp(circle.prevY, circle.destY, circle.alpha);
+  }
+  if (circle.y >= 500) {
+    console.dir("up" + circle);
+    //reset destination and previous
+    circle.destY = 500;
+    circle.prevY = 500;
+    //inverse velocity
+    circle.vertVelocity *= -1;
+    //move again
+    circle.alpha = 0.5;
+    circle.destY -= 30 * circle.speed;
+    circle.y = lerp(circle.prevY, circle.destY, circle.alpha);
+  }
+  if (circle.x <= 0) {
+    //reset destination and previous
+    circle.destX = 0;
+    circle.prevX = 0;
+    //inverse velocity
+    circle.horizVelocity *= -1;
+    //move again
+    circle.alpha = 0.5;
+    circle.destX += 30 * circle.speed;
+    circle.x = lerp(circle.prevX, circle.destX, circle.alpha);
+  }
+  if (circle.x >= 700) {
+    //reset destination and previous
+    circle.destX = 700;
+    circle.prevX = 700;
+    //inverse velocity
+    circle.horizVelocity *= -1;
+    //move again
+    circle.alpha = 0.5;
+    circle.destX -= 30 * circle.speed;
+    circle.x = lerp(circle.prevX, circle.destX, circle.alpha);
   }
 
   //reset alpha
