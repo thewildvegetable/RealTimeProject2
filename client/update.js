@@ -125,7 +125,6 @@ const updatePosition = () => {
     }
     //if against the walls, bounce
     if (circle.y <= 0) {
-        console.dir(circle);
         //reset destination and previous
         circle.destY = 0;
         circle.prevY = 0;
