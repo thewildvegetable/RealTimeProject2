@@ -15,10 +15,11 @@ const circleCollision = (circ1, circ2) => {
   return false;
 };
 
-const copyVelocity = (circle) => {
-    circle.vertVelocity = circle.serverVelocity.y;
-    circle.horizVelocity = circle.serverVelocity.x;
-}
+const copyVelocity = (circ) => {
+  const circle = circ;
+  circle.vertVelocity = circle.serverVelocity.y;
+  circle.horizVelocity = circle.serverVelocity.x;
+};
 
 // put elastic collision on the user
 const applyCollision = (circle1, circle2) => {
@@ -77,10 +78,10 @@ const applyCollision = (circle1, circle2) => {
   // END OF ADAPTED CODE
 
   // move both circles to reflect the collision
-    user1.x = user1Pos.x;
-    user1.y = user1Pos.y;
-    user2.x = user2Pos.x;
-    user2.y = user2Pos.y;
+  user1.x = user1Pos.x;
+  user1.y = user1Pos.y;
+  user2.x = user2Pos.x;
+  user2.y = user2Pos.y;
   // reset destX and destY to current position
   user1.destX = user1.x;
   user1.destY = user1.y;
