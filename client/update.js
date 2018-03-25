@@ -77,6 +77,7 @@ const updatePosition = () => {
     if (Math.abs(circle.horizVelocity) <= .01){
         circle.horizVelocity = 0;
     }
+    
 
   //increment velocity
   if(circle.moveLeft) {

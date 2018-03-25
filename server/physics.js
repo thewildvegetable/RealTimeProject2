@@ -67,7 +67,7 @@ const applyCollision = (circle1, circle2) => {
   if (normalImpactVelocity > 0) return;
 
   // calculate impulse. assume restitution is 0 for perfectly elastic collision
-  let impulse = normalImpactVelocity.invert().divide(2);
+  let impulse = normalImpactVelocity.invert();
   impulse = mtd.multiply(impulse);
 
   // change the momentum
@@ -77,6 +77,10 @@ const applyCollision = (circle1, circle2) => {
   // END OF ADAPTED CODE
 
   // move both circles to reflect the collision
+    user1.x = user1Pos.x;
+    user1.y = user1Pos.y;
+    user2.x = user2Pos.x;
+    user2.y = user2Pos.y;
   // reset destX and destY to current position
   user1.destX = user1.x;
   user1.destY = user1.y;

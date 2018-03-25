@@ -14,7 +14,7 @@ const redraw = (time) => {
 
   for(let i = 0; i < keys.length; i++) {
     const circle = circles[keys[i]];
-
+      
     if(circle.alpha < 1) circle.alpha += 0.05;
 
     //lerp
