@@ -5,6 +5,7 @@ const Message = require('./Messages/Message.js');
 const Victor = require('victor');
 
 let userList = {}; // list of users
+let pickupList = {}; //list of pickups
 
 // circle to circle collision
 const circleCollision = (circ1, circ2) => {
@@ -14,6 +15,13 @@ const circleCollision = (circ1, circ2) => {
   }
   return false;
 };
+
+const circleSquareCollision = (circle, square) => {
+    if(false){
+        return true;
+    }
+    return false;
+}
 
 const copyVelocity = (circ) => {
   const circle = circ;
@@ -116,6 +124,24 @@ const checkCollisions = () => {
 
   // get all users
   const keys = Object.keys(userList);
+    
+  //check player to pickup collisions
+    for (let i = 0; i < pickupList.length; i++){
+        for (let j = 0; j < keys.length; j++){
+            if (circleSquareCollision(userList[keys[j]], pickupList[i])){
+                let user = userList[keys[j]];
+                
+                //increment the players score
+                user.score++;
+                
+                //send message to sockets with the updated player and the collided pickup
+                process.send(new Message('pointScored', {"player": user, "pickup": pickupList[i]}));
+                
+                //exit this for loop
+                break;
+            }
+        }
+    }
 
   // dont check collisions if only 1 user
   if (keys.length === 1) {
@@ -158,6 +184,10 @@ process.on('message', (messageObject) => {
       const user = messageObject.data;
       userList[user.hash] = user;
       break;
+    }
+    case 'pickupList': {
+        //update the pickup list with the data provided
+        pickupList = messageObject.data;
     }
     // otherwise default
     default: {
