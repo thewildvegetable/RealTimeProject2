@@ -9,7 +9,15 @@ const redraw = time => {
 
   //clear screen
   ctx.clearRect(0, 0, 700, 500);
+  //draw pickups
+  const pickupKeys = Object.keys(pickups);
+  for (let i = 0; i < pickupKeys.length; i++) {
+    let rect = pickups[pickupKeys[i]];
+    ctx.fillStyle = rect.color;
+    ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+  }
 
+  //draw circles
   const keys = Object.keys(circles);
 
   for (let i = 0; i < keys.length; i++) {
@@ -43,6 +51,8 @@ let hash;
 let animationFrame;
 
 let circles = {}; //list of users
+let pickups = {}; //list of pickups
+let scores = {}; //list of users who scored a point
 
 //handle for key down events
 //code taken from the inclass physics example
@@ -101,6 +111,16 @@ const init = () => {
   socket.on('joined', setUser);
   socket.on('updatedMovement', update);
   socket.on('left', removeUser);
+  socket.on('pickUpRefill', data => {
+    pickups = data;
+  });
+  socket.on('pointScored', data => {
+    //change to an update scoreboard method in update
+    circles[data.hash].score = data.score;
+    circles[data.hash].radius = data.radius;
+    scores[data.hash] = data;
+    console.log("user " + data.hash + " got a point");
+  });
 
   document.body.addEventListener('keydown', keyDownHandler);
   document.body.addEventListener('keyup', keyUpHandler);
@@ -243,7 +263,6 @@ const updatePosition = () => {
     circle.y = lerp(circle.prevY, circle.destY, circle.alpha);
   }
   if (circle.y >= 500) {
-    console.dir("up" + circle);
     //reset destination and previous
     circle.destY = 500;
     circle.prevY = 500;

@@ -6,7 +6,7 @@ class PickUp {
     this.x = Math.floor((Math.random() * 600) + 1); // x location on screen
     this.y = Math.floor((Math.random() * 400) + 1); // y location on screen
     this.height = 50;
-      this.width = 50;
+    this.width = 50;
     this.color = `rgb(${15},${186},${3})`;
   }
 }

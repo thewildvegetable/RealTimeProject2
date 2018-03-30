@@ -11,14 +11,14 @@ const child = require('child_process');
 // object of user users
 const users = {};
 
-//object of score pickups
+// object of score pickups
 const pickups = {};
 
 // our socketio instance
 let io;
 
 const newPickUp = (num) => {
-    pickups[num] = new PickUp(num);
+  pickups[num] = new PickUp(num);
 };
 
 // start child process
@@ -39,18 +39,18 @@ physics.on('message', (m) => {
       io.sockets.in('room1').emit('updatedMovement', users[m.data.hash]);
       break;
     }
-    case 'pointScored':{
-      //update our users object
+    case 'pointScored': {
+      // update our users object
       users[m.data.player.hash] = m.data.player;
-        
-        //get new score object
-        newPickUp(m.data.pickup.num);
-        
-        //send physics the pickups list
-        physics.send(new Message('pickupList', pickups));
+
+      // get new score object
+      newPickUp(m.data.pickup.num);
+
+      // send physics the pickups list
+      physics.send(new Message('pickupList', pickups));
 
       // send the new data
-      io.sockets.in('room1').emit('pointScored', users[m.data.hash]);
+      io.sockets.in('room1').emit('pointScored', users[m.data.player.hash]);
       io.sockets.in('room1').emit('pickUpRefill', pickups);
       break;
     }
@@ -83,6 +83,14 @@ physics.send(new Message('userList', users));
 const setupSockets = (ioServer) => {
   // set our io server instance
   io = ioServer;
+    
+    //fill pickups list
+    for (let i = 0; i < 3; i++) {
+        newPickUp(i);
+     }
+
+    // send physics the pickups list
+    physics.send(new Message('pickupList', pickups));
 
   // on socket connections
   io.on('connection', (sock) => {
@@ -94,25 +102,15 @@ const setupSockets = (ioServer) => {
 
     // create a new user and store it by its unique id
     users[hash] = new Player(hash);
-      
-      //if pickups is empty, fill it
-      if (pickups.length === 0){
-          for (let i = 0; i < 3; i++){
-              newPickUp(i);
-          }
-          
-          //send physics the pickups list
-          physics.send(new Message('pickupList', pickups));
-      }
 
     // add the id to the user's socket object for quick reference
     socket.hash = hash;
 
     // emit a joined event to the user and send them their user
     socket.emit('joined', users[hash]);
-    
-    //emit a refill event to the user and send them the pickups
-    io.sockets.in('room1').emit('pickUpRefill', pickups);
+
+    // emit a refill event to the user and send them the pickups
+    socket.emit('pickUpRefill', pickups);
 
     // user has moved
     socket.on('movementUpdate', (data) => {

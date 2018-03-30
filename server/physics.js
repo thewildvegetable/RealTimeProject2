@@ -5,7 +5,7 @@ const Message = require('./Messages/Message.js');
 const Victor = require('victor');
 
 let userList = {}; // list of users
-let pickupList = {}; //list of pickups
+let pickupList = {}; // list of pickups
 
 // circle to circle collision
 const circleCollision = (circ1, circ2) => {
@@ -17,13 +17,13 @@ const circleCollision = (circ1, circ2) => {
 };
 
 const circleSquareCollision = (circle, square) => {
-    if(circle.x > square.x && circle.x < square.x + square.width){
-        if (circle.y > square.y && circle.y < square.y + square.height){
-            return true;
-        }
+  if (circle.x > square.x && circle.x < square.x + square.width) {
+    if (circle.y > square.y && circle.y < square.y + square.height) {
+      return true;
     }
-    return false;
-}
+  }
+  return false;
+};
 
 const copyVelocity = (circ) => {
   const circle = circ;
@@ -127,23 +127,35 @@ const checkCollisions = () => {
   // get all users
   const keys = Object.keys(userList);
     
-  //check player to pickup collisions
-    for (let i = 0; i < pickupList.length; i++){
-        for (let j = 0; j < keys.length; j++){
-            if (circleSquareCollision(userList[keys[j]], pickupList[i])){
-                let user = userList[keys[j]];
-                
-                //increment the players score
-                user.score++;
-                
-                //send message to sockets with the updated player and the collided pickup
-                process.send(new Message('pointScored', {"player": user, "pickup": pickupList[i]}));
-                
-                //exit this for loop
-                break;
-            }
-        }
+    //get all pickups
+    const pickupKeys = Object.keys(pickupList);
+
+  // check player to pickup collisions
+  for (let i = 0; i < pickupKeys.length; i++) {
+    for (let j = 0; j < keys.length; j++) {
+      if (circleSquareCollision(userList[keys[j]], pickupList[pickupKeys[i]])) {
+        const user = userList[keys[j]];
+
+        // increment the players score
+        user.score++;
+          
+          //make the player bigger
+          user.radius += 2;
+          
+          //cap radius
+          if (user.radius > 70){
+              user.radius = 70;
+          }
+
+        // send message to sockets with the updated player and the collided pickup
+        process.send(new Message('pointScored', 
+        { player: user, pickup: pickupList[pickupKeys[i]] }));
+
+        // exit this for loop
+        break;
+      }
     }
+  }
 
   // dont check collisions if only 1 user
   if (keys.length === 1) {
@@ -188,8 +200,9 @@ process.on('message', (messageObject) => {
       break;
     }
     case 'pickupList': {
-        //update the pickup list with the data provided
-        pickupList = messageObject.data;
+      // update the pickup list with the data provided
+      pickupList = messageObject.data;
+      break;
     }
     // otherwise default
     default: {

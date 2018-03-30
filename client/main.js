@@ -65,13 +65,15 @@ const init = () => {
   socket.on('joined', setUser);
   socket.on('updatedMovement', update);
   socket.on('left', removeUser);
-    socket.on('pickupRefill', () =>{
+    socket.on('pickUpRefill', (data) =>{
         pickups = data;
     });
-    socket.on('pointScored', () => {
+    socket.on('pointScored', (data) => {
         //change to an update scoreboard method in update
-        users[data.hash].score = data.score;
+        circles[data.hash].score = data.score;
+        circles[data.hash].radius = data.radius;
         scores[data.hash] = data;
+        console.log("user " + data.hash + " got a point");
     });
 
   document.body.addEventListener('keydown', keyDownHandler);

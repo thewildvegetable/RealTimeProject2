@@ -137,7 +137,6 @@ const updatePosition = () => {
         circle.y = lerp(circle.prevY, circle.destY, circle.alpha);
     }
     if (circle.y >= 500) {
-        console.dir("up" + circle);
         //reset destination and previous
         circle.destY = 500;
         circle.prevY = 500;

@@ -9,10 +9,10 @@ const redraw = (time) => {
     
     //clear screen
   ctx.clearRect(0, 0, 700, 500);
-    
     //draw pickups
-    for(let i = 0; i < pickups.length; i++){
-        let rect = pickups[i];
+    const pickupKeys = Object.keys(pickups);
+    for(let i = 0; i < pickupKeys.length; i++){
+        let rect = pickups[pickupKeys[i]];
         ctx.fillStyle = rect.color;
         ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
     }
