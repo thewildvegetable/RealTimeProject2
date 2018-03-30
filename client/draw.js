@@ -9,7 +9,15 @@ const redraw = (time) => {
     
     //clear screen
   ctx.clearRect(0, 0, 700, 500);
-
+    
+    //draw pickups
+    for(let i = 0; i < pickups.length; i++){
+        let rect = pickups[i];
+        ctx.fillStyle = rect.color;
+        ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+    }
+    
+  //draw circles
   const keys = Object.keys(circles);
 
   for(let i = 0; i < keys.length; i++) {

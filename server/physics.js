@@ -17,8 +17,10 @@ const circleCollision = (circ1, circ2) => {
 };
 
 const circleSquareCollision = (circle, square) => {
-    if(false){
-        return true;
+    if(circle.x > square.x && circle.x < square.x + square.width){
+        if (circle.y > square.y && circle.y < square.y + square.height){
+            return true;
+        }
     }
     return false;
 }

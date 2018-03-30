@@ -5,6 +5,8 @@ let hash;
 let animationFrame;
 
 let circles = {}; //list of users
+let pickups = {}; //list of pickups
+let scores = {};  //list of users who scored a point
 
 //handle for key down events
 //code taken from the inclass physics example
@@ -63,6 +65,14 @@ const init = () => {
   socket.on('joined', setUser);
   socket.on('updatedMovement', update);
   socket.on('left', removeUser);
+    socket.on('pickupRefill', () =>{
+        pickups = data;
+    });
+    socket.on('pointScored', () => {
+        //change to an update scoreboard method in update
+        users[data.hash].score = data.score;
+        scores[data.hash] = data;
+    });
 
   document.body.addEventListener('keydown', keyDownHandler);
   document.body.addEventListener('keyup', keyUpHandler);
