@@ -176,3 +176,58 @@ const updatePosition = () => {
   //send updated movement to server
   socket.emit('movementUpdate', circle);
 };
+
+//loop through the scores and sort them largest to smallest
+const sortScores = (scoreArray) =>{
+    let largest = 0;            //position of the largest score
+    let temp = scoreArray[0];       //temp variable for position swapping
+    
+    for (let i = 0; i < scoreArray.length - 1; i++){
+        //set the largest for this iteration
+        largest = i;
+        //loop through the rest of the array, comparing size
+        for (let j = i+1; j< scoreArray.length; j++){
+            if (scoreArray[largest].score < scoreArray[j].score){
+                largest = j;
+            }
+        }
+        //swap i and largest
+        if (largest != i){
+            temp = scoreArray[i];   //store current number in temp
+            scoreArray[i] = scoreArray[largest];    //move largest to pos i
+            scoreArray[largest] = temp;     //move i to largest's old position
+        }
+    }
+    
+    return scoreArray;
+}
+
+//update the scoreboard under the canvas
+const updateScores = () => {
+    //empty the scoreboard
+    scoreHolder.innerHTML = "";
+    
+    //create scoreArray
+    let scoreArray = [];
+    
+    //fill the array
+    let keys = Object.keys(scores);
+    for (let i = 0; i < keys.length; i++){
+        scoreArray.push(scores[keys[i]]);
+    }
+    
+    //sort the scores
+    scoreArray = sortScores(scoreArray);
+    console.dir(scoreArray);
+            
+    //loop through the users and place the scoreboard in       
+    for(let i = 0; i < scoreArray.length; i++){
+        let player = scoreArray[i];
+                
+        //create the html element for this player's score
+        let p1 = document.createElement("p");
+        p1.textContent = player.name + ": " + player.score + " points";
+        
+        scoreHolder.appendChild(p1);
+    }
+};

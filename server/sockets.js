@@ -106,11 +106,20 @@ const setupSockets = (ioServer) => {
     // add the id to the user's socket object for quick reference
     socket.hash = hash;
 
-    // emit a joined event to the user and send them their user
-    socket.emit('joined', users[hash]);
+    
 
     // emit a refill event to the user and send them the pickups
     socket.emit('pickUpRefill', pickups);
+      
+    //let the player set a name
+    socket.on('nameChange', (data) => {
+          //set player name
+          users[socket.hash].name = data.name;
+          users[socket.hash].lastUpdate = new Date().getTime();
+          
+          // emit a joined event to the user and send them their user
+          socket.emit('joined', users[socket.hash]);
+    });
 
     // user has moved
     socket.on('movementUpdate', (data) => {

@@ -17,8 +17,8 @@ const circleCollision = (circ1, circ2) => {
 };
 
 const circleSquareCollision = (circle, square) => {
-  if (circle.x > square.x && circle.x < square.x + square.width) {
-    if (circle.y > square.y && circle.y < square.y + square.height) {
+  if (circle.x + (circle.radius / 3) > square.x && circle.x - (circle.radius / 3) < square.x + square.width) {
+    if (circle.y + (circle.radius / 3) > square.y && circle.y - (circle.radius / 3) < square.y + square.height) {
       return true;
     }
   }
