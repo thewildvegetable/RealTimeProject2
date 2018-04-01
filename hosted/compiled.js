@@ -143,6 +143,9 @@ const connect = () => {
 
   //show the game
   gameDiv.style.display = "inline";
+
+  //move the instructions
+  document.querySelector("#instructions").style.textAlign = "left";
 };
 
 const init = () => {

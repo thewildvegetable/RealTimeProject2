@@ -17,8 +17,10 @@ const circleCollision = (circ1, circ2) => {
 };
 
 const circleSquareCollision = (circle, square) => {
-  if (circle.x + (circle.radius / 3) > square.x && circle.x - (circle.radius / 3) < square.x + square.width) {
-    if (circle.y + (circle.radius / 3) > square.y && circle.y - (circle.radius / 3) < square.y + square.height) {
+  if (circle.x + (circle.radius / 3) > square.x &&
+      circle.x - (circle.radius / 3) < square.x + square.width) {
+    if (circle.y + (circle.radius / 3) > square.y &&
+        circle.y - (circle.radius / 3) < square.y + square.height) {
       return true;
     }
   }
@@ -126,9 +128,9 @@ const checkCollisions = () => {
 
   // get all users
   const keys = Object.keys(userList);
-    
-    //get all pickups
-    const pickupKeys = Object.keys(pickupList);
+
+  // get all pickups
+  const pickupKeys = Object.keys(pickupList);
 
   // check player to pickup collisions
   for (let i = 0; i < pickupKeys.length; i++) {
@@ -138,18 +140,20 @@ const checkCollisions = () => {
 
         // increment the players score
         user.score++;
-          
-          //make the player bigger
-          user.radius += 2;
-          
-          //cap radius
-          if (user.radius > 70){
-              user.radius = 70;
-          }
+
+        // make the player bigger
+        user.radius += 2;
+
+        // cap radius
+        if (user.radius > 70) {
+          user.radius = 70;
+        }
 
         // send message to sockets with the updated player and the collided pickup
-        process.send(new Message('pointScored', 
-        { player: user, pickup: pickupList[pickupKeys[i]] }));
+        process.send(new Message(
+          'pointScored',
+          { player: user, pickup: pickupList[pickupKeys[i]] },
+        ));
 
         // exit this for loop
         break;

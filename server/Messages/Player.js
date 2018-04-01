@@ -5,7 +5,7 @@ const Victor = require('victor');
 class Player {
   constructor(hash) {
     this.hash = hash;
-      this.name = "";
+    this.name = '';
     this.lastUpdate = new Date().getTime();
     this.x = Math.floor((Math.random() * 600) + 1); // x location on screen
     this.y = Math.floor((Math.random() * 400) + 1); // y location on screen
